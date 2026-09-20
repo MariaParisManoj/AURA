@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aura Resources | From Ocean to Table</title>
+    <style>
+        :root {
+            var(--primary-navy): #112A46;
+            --primary-navy: #112A46; 
+            --primary-gold: #CFA85E; 
+            --ocean-blue: #1C6B96;   
+            --sky-bg: #eef7fc;       
+            --text-dark: #2d3748;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--sky-bg); color: var(--text-dark); }
+        
+        header { background-color: #ffffff; box-shadow: 0 4px 15px rgba(28, 107, 150, 0.1); position: sticky; top: 0; z-index: 100; }
+        .nav-container { max-width: 1200px; margin: 0 auto; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .logo-container { display: flex; align-items: center; text-decoration: none; }
+        .logo-img { height: 70px; width: auto; object-fit: contain; }
+        .nav-links { display: flex; gap: 25px; list-style: none; }
+        .nav-links a { text-decoration: none; color: var(--primary-navy); font-weight: 600; transition: color 0.3s; }
+        .nav-links a:hover { color: var(--ocean-blue); }
+        .cart-btn { background-color: var(--primary-navy); color: white; padding: 10px 20px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; transition: background 0.3s; }
+        .cart-btn:hover { background-color: var(--primary-gold); }
+
+        .hero { background-color: var(--primary-navy); color: white; text-align: center; padding: 80px 20px; background-image: linear-gradient(rgba(17, 42, 70, 0.8), rgba(28, 107, 150, 0.8)), url('https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80'); background-size: cover; background-position: center; }
+        .hero h1 { font-size: 3.5rem; color: var(--primary-gold); margin-bottom: 15px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .hero p { font-size: 1.2rem; max-width: 600px; margin: 0 auto 30px auto; }
+
+        .container { max-width: 1200px; margin: 50px auto; padding: 0 20px; }
+        .section-title { text-align: center; color: var(--primary-navy); margin-bottom: 40px; font-size: 2rem; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
+        .product-card { background: white; border-radius: 8px; padding: 20px; text-align: center; box-shadow: 0 6px 15px rgba(28, 107, 150, 0.08); transition: transform 0.3s; border-bottom: 3px solid var(--primary-gold); display: flex; flex-direction: column; }
+        .product-card:hover { transform: translateY(-5px); }
+        .product-img { width: 100%; height: 200px; background-color: #eee; border-radius: 5px; margin-bottom: 15px; object-fit: cover; }
+        .product-title { color: var(--primary-navy); font-size: 1.2rem; margin-bottom: 5px; }
+        .product-tamil-title { color: #4a5568; font-size: 1rem; margin-bottom: 10px; }
+        .product-price { color: var(--ocean-blue); font-size: 1.3rem; font-weight: bold; margin-bottom: 15px; }
+        .add-to-cart { margin-top: auto; width: 100%; padding: 10px; background-color: white; color: var(--ocean-blue); border: 2px solid var(--ocean-blue); border-radius: 5px; font-weight: bold; cursor: pointer; transition: all 0.3s; }
+        .add-to-cart:hover { background-color: var(--ocean-blue); color: white; }
+
+        /* Cart Modal Styles */
+        .cart-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; display: none; opacity: 0; transition: opacity 0.3s; }
+        .cart-overlay.active { display: block; opacity: 1; }
+        .cart-modal { position: fixed; top: 0; right: -400px; width: 400px; height: 100vh; background: white; z-index: 1000; box-shadow: -2px 0 15px rgba(0,0,0,0.1); transition: right 0.3s; display: flex; flex-direction: column; }
+        .cart-modal.active { right: 0; }
+        .cart-header { padding: 20px; background: var(--primary-navy); color: white; display: flex; justify-content: space-between; align-items: center; }
+        .close-cart { cursor: pointer; font-size: 1.5rem; font-weight: bold; }
+        .cart-body { padding: 20px; flex: 1; overflow-y: auto; }
+        .cart-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #eee; }
+        .cart-item img { width: 50px; height: 50px; object-fit: cover; border-radius: 5px; }
+        .cart-item-details { flex: 1; padding: 0 15px; }
+        .cart-item-title { font-weight: bold; color: var(--primary-navy); }
+        .cart-item-price { color: var(--ocean-blue); font-weight: 600; }
+        .qty-btn { background: #eee; border: none; padding: 2px 8px; cursor: pointer; border-radius: 3px; font-weight: bold; }
+        .remove-item { color: red; cursor: pointer; font-size: 0.9rem; }
+        .cart-footer { padding: 20px; border-top: 1px solid #eee; background: #f9fafb; }
+        .cart-total { display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: bold; margin-bottom: 15px; color: var(--primary-navy); }
+        .checkout-btn { width: 100%; padding: 15px; background: var(--primary-gold); color: var(--primary-navy); border: none; border-radius: 5px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .checkout-btn:hover { background: #b8924b; }
+
+        footer { background: linear-gradient(180deg, var(--primary-navy) 0%, #0a192f 100%); color: white; padding: 60px 20px 20px 20px; margin-top: 60px; }
+        .footer-content { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; margin-bottom: 40px; }
+        .footer-section h3 { color: var(--primary-gold); margin-bottom: 20px; font-size: 1.5rem; }
+        .footer-section p { line-height: 1.6; margin-bottom: 10px; color: #e2e8f0; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="nav-container">
+            <a href="#" class="logo-container">
+                <img src="Gemini_Generated_Image_birjewbirjewbirj.png" alt="Aura Resources Logo" class="logo-img" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=Aura+Resources&background=112A46&color=CFA85E&size=150';">
+            </a>
+            <ul class="nav-links">
+                <li><a href="#shop">Shop</a></li>
+                <li><a href="admin.html" style="color: var(--primary-gold);">Admin Dashboard</a></li>
+            </ul>
+            <button class="cart-btn" onclick="openCart()">Cart (<span id="cart-count">0</span>)</button>
+        </div>
+    </header>
+
+    <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-header">
+            <h2>Your Cart</h2>
+            <span class="close-cart" onclick="closeCart()">&times;</span>
+        </div>
+        <div class="cart-body" id="cartBody">
+            <!-- Cart items injected here -->
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="cartTotal">₹0</span>
+            </div>
+            <button class="checkout-btn" onclick="checkout()">Proceed to Checkout</button>
+        </div>
+    </div>
+
+    <section class="hero">
+        <h1>From Ocean to Table</h1>
+        <p>Authentic, Unique, Reliable, and Abundant. Discover the finest sun-dried seafood straight from the coastal town of Thoothukudi.</p>
+        <button class="cart-btn" style="padding: 15px 30px; font-size: 1.1rem;"><a href="#shop" style="color: white; text-decoration: none;">Shop Our Catch</a></button>
+    </section>
+
+    <div class="container" id="shop">
+        <h2 class="section-title">Fresh Catch & Dry Fish Specials</h2>
+        <div class="grid" id="product-grid"></div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Aura Resources</h3>
+                <p><strong>A Thoothukudi-based Company</strong></p>
+                <p>We bring the authentic taste of the coast directly to your home.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        let inventory = [];
+        let cart = JSON.parse(localStorage.getItem('auraCart')) || [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const defaultInventory = [
+                { id: "P1", name: "Nethili", tamilName: "(நெத்திலி)", price: 160, weight: "250g", image: "https://images.unsplash.com/photo-1599084993091-1cb5c0721cc6?w=500&q=80" },
+                { id: "P2", name: "Saalai / Mathi", tamilName: "(சாளை / மத்தி)", price: 150, weight: "250g", image: "https://images.unsplash.com/photo-1615486171448-4fb324f61f73?w=500&q=80" },
+                { id: "P3", name: "Maasi", tamilName: "(மாசி)", price: 250, weight: "250g", image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&q=80" }
+            ];
+            
+            inventory = JSON.parse(localStorage.getItem('auraInventory'));
+            if (!inventory || inventory.length === 0) {
+                inventory = defaultInventory;
+                localStorage.setItem('auraInventory', JSON.stringify(inventory));
+            }
+
+            renderProducts();
+            updateCartCount();
+        });
+
+        function renderProducts() {
+            const grid = document.getElementById('product-grid');
+            grid.innerHTML = ''; 
+            inventory.forEach((product, index) => {
+                const img = product.image || "https://images.unsplash.com/photo-1599084993091-1cb5c0721cc6?w=500&q=80";
+                grid.innerHTML += `
+                    <div class="product-card">
+                        <img src="${img}" alt="${product.name}" class="product-img" onerror="this.src='https://via.placeholder.com/500'">
+                        <h3 class="product-title">${product.name}</h3>
+                        <p class="product-tamil-title">${product.tamilName}</p>
+                        <p style="color:#718096; margin-bottom:5px;">Weight: ${product.weight}</p>
+                        <p class="product-price">₹${product.price}</p>
+                        <button class="add-to-cart" onclick="addToCart(this, ${index})">Add to Cart</button>
+                    </div>
+                `;
+            });
+        }
+
+        function addToCart(btn, index) {
+            let product = inventory[index];
+            let existing = cart.find(item => item.name === product.name);
+            
+            if(existing) existing.qty += 1;
+            else cart.push({...product, qty: 1});
+            
+            saveCart();
+            
+            const originalText = btn.innerText;
+            btn.innerText = "Added!";
+            btn.style.backgroundColor = "var(--primary-gold)";
+            btn.style.color = "white";
+            btn.style.borderColor = "var(--primary-gold)";
+            setTimeout(() => {
+                btn.innerText = originalText;
+                btn.style.backgroundColor = "white";
+                btn.style.color = "var(--ocean-blue)";
+                btn.style.borderColor = "var(--ocean-blue)";
+            }, 1000);
+        }
+
+        function saveCart() {
+            localStorage.setItem('auraCart', JSON.stringify(cart));
+            updateCartCount();
+            renderCart();
+        }
+
+        function updateCartCount() {
+            const count = cart.reduce((sum, item) => sum + item.qty, 0);
+            document.getElementById('cart-count').innerText = count;
+        }
+
+        function openCart() {
+            document.getElementById('cartModal').classList.add('active');
+            document.getElementById('cartOverlay').classList.add('active');
+            renderCart();
+        }
+
+        function closeCart() {
+            document.getElementById('cartModal').classList.remove('active');
+            document.getElementById('cartOverlay').classList.remove('active');
+        }
+
+        function updateQty(index, change) {
+            cart[index].qty += change;
+            if(cart[index].qty <= 0) cart.splice(index, 1);
+            saveCart();
+        }
+
+        function removeItem(index) {
+            cart.splice(index, 1);
+            saveCart();
+        }
+
+        function renderCart() {
+            const body = document.getElementById('cartBody');
+            let total = 0;
+            if(cart.length === 0) {
+                body.innerHTML = '<p style="text-align:center; color:#718096; margin-top:50px;">Your cart is empty.</p>';
+            } else {
+                body.innerHTML = cart.map((item, index) => {
+                    let itemTotal = item.price * item.qty;
+                    total += itemTotal;
+                    const img = item.image || "https://via.placeholder.com/50";
+                    return `
+                    <div class="cart-item">
+                        <img src="${img}" onerror="this.src='https://via.placeholder.com/50'">
+                        <div class="cart-item-details">
+                            <div class="cart-item-title">${item.name}</div>
+                            <div class="cart-item-price">₹${item.price}</div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div>
+                                <button class="qty-btn" onclick="updateQty(${index}, -1)">-</button>
+                                <span style="margin: 0 5px; font-weight:bold;">${item.qty}</span>
+                                <button class="qty-btn" onclick="updateQty(${index}, 1)">+</button>
+                            </div>
+                            <div class="remove-item" onclick="removeItem(${index})">Remove</div>
+                        </div>
+                    </div>
+                    `;
+                }).join('');
+            }
+            document.getElementById('cartTotal').innerText = '₹' + total;
+        }
+
+        function checkout() {
+            if(cart.length === 0) return alert("Your cart is empty!");
+            
+            let orders = JSON.parse(localStorage.getItem('auraOrders')) || [];
+            let total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            
+            let order = {
+                id: 'ORD' + Math.floor(1000 + Math.random() * 9000),
+                date: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString(),
+                items: cart,
+                total: total,
+                status: 'New'
+            };
+            
+            orders.unshift(order); // Add to beginning
+            localStorage.setItem('auraOrders', JSON.stringify(orders));
+            
+            cart = [];
+            saveCart();
+            closeCart();
+            
+            alert(`🎉 Success! Your order (${order.id}) has been placed. Check the Admin Dashboard.`);
+        }
+    </script>
+</body>
+</html>
